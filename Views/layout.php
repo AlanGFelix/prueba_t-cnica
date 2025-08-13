@@ -6,20 +6,27 @@
     <title>Evaluación</title>
     <link rel="stylesheet" href="../views/assets/layout/css/index.css">
     <script src="../views/assets/layout/js/index.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
 </head>
 <body>
     <header>
-        <nav>
-            <span class="navbar-brand">Evaluación</span>
-            <button class="dropdown">
-                Dropdown
-            </button>
-                <ul class="dropdown-list">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 py-0">
+            <div class="container-fluid justify-content-start h-100">
+                <span class="navbar-brand">Evaluación</span>
+                <div class="dropdown  h-100">
+
+                    <div class="d-flex align-items-center btn dropdown-toggle h-100 rounded-0 dropdown-button">
+                        <span>
+                            Dropdown link
+                        </span>
+                    </div>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>

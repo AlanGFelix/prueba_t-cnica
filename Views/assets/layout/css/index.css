@@ -1,0 +1,11 @@
+nav {
+    height: 60px;
+}
+
+.btn.dropdown-button:hover {
+    background-color: rgb(165, 165, 165);
+}
+
+.btn.dropdown-button:hover span {
+    color: rgb(255, 245, 245);
+}
