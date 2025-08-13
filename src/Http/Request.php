@@ -1,6 +1,8 @@
 <?php
 namespace App\Http;
 
+use Exception;
+
 class Request{
     private $segments = [];
     private $controller;
@@ -44,7 +46,17 @@ class Request{
             new $controller,
             $method
         ]);
+        
+        try {
+            if ($response instanceof Response) {
+                $response->send();
+            } else {
+                throw new Exception('Error al procesar la solicitud');
+            }
+        } catch(Exception $e) {
+            echo "Detalle: {$e->getMessage()}";
+        }
 
-        $response->send();
+        
     }
 }
