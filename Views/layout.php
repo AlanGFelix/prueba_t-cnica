@@ -22,5 +22,8 @@
             </div>
         </nav>
     </header>
+    <main>
+        <?=$content?>
+    </main>
 </body>
 </html>
