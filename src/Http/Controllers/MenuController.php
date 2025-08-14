@@ -6,6 +6,7 @@ use App\Http\Interfaces\IController;
 use App\Http\Interfaces\IMenu;
 use Request;
 use App\Http\Response;
+use Exception;
 
 class MenuController implements IController{
     private $menuInstance;
@@ -41,8 +42,44 @@ class MenuController implements IController{
         return new Response('redirect', ['path' => '../']);
     }
 
-    public function update() {
-        
+    public function edit($args) {
+        $input = $args[0];
+
+        try {
+            $id = $this->validateInt($input);
+        } catch (Exception $e) {
+            die("Error con el Menú solicitado. Detalle: {$e->getMessage()}");
+        }
+
+        $menus = $this->menuInstance->getAll();
+        $menuUpdate = $this->menuInstance->get($id);
+
+        if(!$menuUpdate) {
+            die("No existe un menú con ese id");
+        }
+
+        return new Response('create-menu',  ['menus' => $menus, 'menuUpdate' => [$menuUpdate]]);
+    }
+
+    public function update($args) {
+        $input = $args[0];
+        $id = null;
+
+        try {
+            $id = $this->validateInt($input);
+        } catch (Exception $e) {
+            die("Error con el Menú solicitado. Detalle: {$e->getMessage()}");
+        }
+
+        $body = $_POST;
+        $this->validateInputs($body);
+        $name = trim($body['name']);
+        $description = trim($body['description']);
+        $parent = $body['parent'] == "" ? null : $body['parent'];
+
+        $this->menuInstance->update($id, $name, $description, $parent);
+
+        return new Response('redirect', ['path' => '../../']);
     }
 
     private function validateInputs($request) {
@@ -54,7 +91,7 @@ class MenuController implements IController{
             die("El valor de la descripción debe ser enviado");
         } 
         
-        $parent = (int) $request['parent'];
+        $parent = $request['parent'];
         $name = trim($request['name']);
         $description = trim($request['description']);
 
@@ -75,14 +112,26 @@ class MenuController implements IController{
         }
 
         if(isset($parent) && $parent != "") {
-            if (!is_int($parent)) {
-                die("El valor del menú padre debe ser un id de otro menú");
+            try {
+                $parent = $this->validateInt($parent);
+            } catch (Exception $e) {
+                die("Error con el Menú Padre. Detalle: ".$e->getMessage());
             }
 
             $menu = $this->menuInstance->get($parent);
-            if (count($menu) < 1) {
+            if (!$menu) {
                 die("Debe mandar un menú padre existente");
             }
         }
+    }
+
+    private function validateInt($value) {
+        try {
+            $value = (int) $value;
+        } catch(Exception $e) {
+            throw new Exception("Debe mandar un valor entero");
+        }
+
+        return $value;
     }
 }

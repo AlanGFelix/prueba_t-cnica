@@ -8,15 +8,17 @@ use Exception;
 
 class Request implements IRequest{
     private $segments = [];
+    private $args = [];
     private $controller;
     private $method;
 
     public function __construct(){
         $segments = explode('/',$_SERVER['REQUEST_URI']);
-        $this->segments = array_splice($segments, 2, 2);
+        $this->segments = array_splice($segments, 2);
         
         $this->setController();
         $this->setMethod();
+        $this->setArgs();
     }
 
     public function setController() {
@@ -41,16 +43,33 @@ class Request implements IRequest{
         return $this->method;
     }
 
+    public function setArgs() {
+        if(count($this->segments) > 2) {
+            $this->args = array_splice($this->segments, 2);
+        }
+    }
+    
+    public function getArgs() {
+        return $this->method;
+    }
+
     public function send() {
         $controller = $this->getController();
         $method = $this->getMethod();
         $databaseInstance = new Database();
         $menuInstance = new Menu($databaseInstance);
 
-        $response = call_user_func([
-            new $controller($menuInstance),
-            $method
-        ]);
+        if (count($this->args) > 0) {
+            $response = call_user_func([
+                new $controller($menuInstance),
+                $method
+            ], $this->args);
+        } else {
+            $response = call_user_func([
+                new $controller($menuInstance),
+                $method
+            ]);
+        }
         
         try {
             if ($response instanceof Response) {

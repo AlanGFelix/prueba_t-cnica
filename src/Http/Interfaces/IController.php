@@ -6,5 +6,6 @@ interface IController {
     function index();
     function create();
     function store();
-    function update();
+    function edit($args);
+    function update($args);
 }

@@ -16,6 +16,10 @@ class Menu implements IMenu {
     public function get($id) {
         $menu = $this->dbInstance->execute("select * from menus WHERE id = ?", [$id]);
 
+        if($menu) {
+            $menu = $menu[0];
+        }
+
         return $menu;
     }
 
@@ -44,7 +48,14 @@ class Menu implements IMenu {
     }
 
     public function update($id, $name, $description, $id_parent = null) {
-
+        try {
+            $this->dbInstance->execute(
+                "UPDATE menus SET name = ?, description = ?, id_parent = ? WHERE id = ?",
+                [$name, $description, $id_parent, $id]
+            );
+        } catch (PDOException $e) {
+            die("Error al actualizar el menú. Detalle: " . $e->getMessage());
+        }
     }
 
     public function delete($id) {
@@ -91,7 +102,7 @@ class Menu implements IMenu {
                         {$menu['description']}
                     </td>
                     <td>
-                        Acciones...
+                        <a href='menu/edit/{$menu['id']}' class='btn btn-info text-decoration-none'>Editar</a>
                     </td>
                 </tr>";
 
