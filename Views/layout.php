@@ -30,8 +30,8 @@
             </div>
         </nav>
     </header>
-    <main>
-        <?=$content?>
+    <main class="d-flex justify-content-center">
+        <?php require_once $view?>
     </main>
 </body>
 </html>

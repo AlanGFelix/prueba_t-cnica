@@ -1,6 +1,7 @@
 <?php
 namespace App\Http;
 
+use App\lib\Database\Database;
 use Exception;
 
 class Request{
@@ -18,7 +19,7 @@ class Request{
 
     private function setController() {
         $this->controller = empty($this->segments[0]) ?
-            'home' :
+            'menu' :
             $this->segments[0];
     }
 
@@ -41,9 +42,10 @@ class Request{
     public function send() {
         $controller = $this->getController();
         $method = $this->getMethod();
+        $databaseInstance = new Database();
 
         $response = call_user_func([
-            new $controller,
+            new $controller($databaseInstance),
             $method
         ]);
         
