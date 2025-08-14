@@ -21,12 +21,6 @@ class Menu implements IMenu {
 
     public function getAll() {
         $menus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null");
-
-        return $menus;
-    }
-
-    public function getAllWithChildren() {
-        $menus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null");
         $menus = $this->getChilds($menus);
 
         return $menus;
