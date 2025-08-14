@@ -43,11 +43,12 @@ class Request{
         $controller = $this->getController();
         $method = $this->getMethod();
         $databaseInstance = new Database();
+        $request = $_POST;
 
         $response = call_user_func([
             new $controller($databaseInstance),
             $method
-        ]);
+        ], $request);
         
         try {
             if ($response instanceof Response) {
