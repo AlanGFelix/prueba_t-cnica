@@ -2,6 +2,7 @@
 namespace App\Http;
 
 use App\Http\Interfaces\IRequest;
+use App\Http\Model\Menu;
 use App\lib\Database\Database;
 use Exception;
 
@@ -44,10 +45,11 @@ class Request implements IRequest{
         $controller = $this->getController();
         $method = $this->getMethod();
         $databaseInstance = new Database();
+        $menuInstance = new Menu($databaseInstance);
         $request = $_POST;
 
         $response = call_user_func([
-            new $controller($databaseInstance),
+            new $controller($menuInstance),
             $method
         ], $request);
         

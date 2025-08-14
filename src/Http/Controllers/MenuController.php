@@ -3,18 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Interfaces\IController;
+use App\Http\Interfaces\IMenu;
 use App\Http\Response;
-use PDOException;
 
 class MenuController implements IController{
-    private $dbInstance;
-    public function __construct($dbInstance) {
-        $this->dbInstance = $dbInstance;
+    private $menuInstance;
+    public function __construct(IMenu $menuInstance) {
+        $this->menuInstance = $menuInstance;
     }
     public function index() {
-        $menus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null");
-
-        $menus = $this->getChilds($menus);
+        $menus = $this->menuInstance->getAllWithChildren();
 
         return new Response('menu', ['menus' => $menus]);
     }
@@ -26,18 +24,11 @@ class MenuController implements IController{
     public function store($request) {
         $this->validateInputs($request);
 
-        $parent = $request['parent'] ?? null;
         $name = $request['name'];
         $description = $request['description'];
+        $parent = $request['parent'] ?? null;
 
-        try {
-            $this->dbInstance->execute(
-                "insert into menus (name, description, id_parent) values (?,?,?)",
-                [$name, $description, $parent]
-            );
-        } catch (PDOException $e) {
-            die("Error al generar el menú. Detalle: " . $e->getMessage());
-        }
+        $this->menuInstance->create($name, $description, $parent);
         
         header("Location: ../");
         exit(303);
@@ -80,29 +71,9 @@ class MenuController implements IController{
             die("El valor de la descripción no puede estar vacío");
         }
 
-        $menu = $this->dbInstance->execute("select * from menus WHERE id = ?", $parent);
+        $menu = $this->menuInstance->get($parent);
         if (count($menu) < 1) {
             die("Debe mandar un menú padre existente");
         }
-    }
-
-    private function getChilds($menus) {
-        foreach ($menus as &$menu) {
-            $submenus = null;
-            $idMenu = $menu['id'];
-            
-            try {
-                $submenus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent = ?", [$idMenu]);
-            } catch (PDOException $e) {
-                die("Error al buscar los submenús. Detalle: " . $e->getMessage());
-            }
-
-            if($submenus) {
-                $submenus = $this->getChilds($submenus);
-            }
-            $menu['submenus'] = $submenus;
-        }
-        
-        return $menus;
     }
 }
