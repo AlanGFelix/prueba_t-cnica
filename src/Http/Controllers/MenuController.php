@@ -82,6 +82,21 @@ class MenuController implements IController{
         return new Response('redirect', ['path' => '../../']);
     }
 
+    public function delete($args) {
+        $input = $args[0];
+        $id = null;
+
+        try {
+            $id = $this->validateInt($input);
+        } catch (Exception $e) {
+            die("Error con el Menú solicitado. Detalle: {$e->getMessage()}");
+        }
+
+        $this->menuInstance->delete($id);
+
+        return new Response('redirect', ['path' => '../../']);
+    }
+
     private function validateInputs($request) {
         if (!isset($request['name'])) {
             die("El valor del nombre del menú debe ser enviado");

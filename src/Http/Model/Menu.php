@@ -24,7 +24,7 @@ class Menu implements IMenu {
     }
 
     public function getAll() {
-        $menus = $this->dbInstance->execute("SELECT * FROM menus");
+        $menus = $this->dbInstance->execute("SELECT * FROM menus ORDER BY id");
 
         return $menus;
     }
@@ -37,9 +37,9 @@ class Menu implements IMenu {
     }
 
     public function getAllWithParent() {
-        $menusWithoutParent = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null ORDER BY id");
-        $menusWithParent = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is not null ORDER BY id");
-        $menus = $this->getParentName($menusWithParent, $menusWithoutParent);
+        $allMenus = $this->dbInstance->execute("SELECT * FROM menus ORDER BY id");
+        $menus = $this->getChilds($allMenus);
+        $menus = $this->orderMenus($menus);
 
         return $menus;
     }
@@ -90,37 +90,27 @@ class Menu implements IMenu {
         return $menus;
     }
 
-    private function getParentName($menusWithParent, $menusWithoutParent) {
-        $menusParents = $this->indexByParent($menusWithParent);
-        $menus = [];
+    private function orderMenus($menus, $parent = null) {
+        $menusOrdered = [];
+        foreach ($menus as &$menu) {
+            $submenus = isset($menu['submenus']) ? $menu['submenus'] : null;
 
-        foreach($menusWithoutParent as $menu) {
-            array_push($menus, $menu);
-            $idParent = $menu['id'];
-            $children = $menusParents[$idParent];
-
-            foreach ($children as $menuChild) {
-                unset($menuChild['id_parent']);
-                $menuChild['parent'] = ['id' => $menu['id'], 'name' => $menu['name']];
-                array_push($menus, $menuChild);
+            if ($parent) {
+                $menu['parent'] = $parent;
             }
+
+            unset($menu['submenus']);
+            unset($menu['id_parent']);
+            array_push($menusOrdered, $menu);
+            if ($submenus) {
+                $menuParent = ['id' => $menu['id'], 'name' => $menu['name']];
+                $newMenus = $this->orderMenus($submenus, $menuParent);
+                
+                array_merge([$menusOrdered], $newMenus);
+            }
+
         }
 
-        return $menus;
-    }
-
-    private function indexByParent($menusWithParent) {
-        $arr = [];
-
-        foreach ($menusWithParent as $menu) {
-            $parent = $menu['id_parent'];
-            if (!isset($arr[$parent])) {
-                $arr[$parent] = [$menu];
-            } else {
-                array_push($arr[$parent], $menu);
-            }
-        }
-
-        return $arr;
+        return $menusOrdered;
     }
 }
