@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Interfaces\IController;
 use App\Http\Response;
-use App\lib\Database\Database;
 use PDOException;
 
-class MenuController {
+class MenuController implements IController{
     private $dbInstance;
     public function __construct($dbInstance) {
         $this->dbInstance = $dbInstance;
@@ -41,6 +41,10 @@ class MenuController {
         
         header("Location: ../");
         exit(303);
+    }
+
+    public function update() {
+        
     }
 
     private function validateInputs($request) {

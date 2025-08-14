@@ -1,29 +1,30 @@
 <?php
 namespace App\Http;
 
+use App\Http\Interfaces\IRequest;
 use App\lib\Database\Database;
 use Exception;
 
-class Request{
+class Request implements IRequest{
     private $segments = [];
     private $controller;
     private $method;
 
     public function __construct(){
         $segments = explode('/',$_SERVER['REQUEST_URI']);
-        $this->segments = array_splice($segments, 3, 2);
+        $this->segments = array_splice($segments, 2, 2);
         
         $this->setController();
         $this->setMethod();
     }
 
-    private function setController() {
+    public function setController() {
         $this->controller = empty($this->segments[0]) ?
             'menu' :
             $this->segments[0];
     }
 
-    private function setMethod() {
+    public function setMethod() {
         $this->method = empty($this->segments[1]) ?
             'index' :
             $this->segments[1];
