@@ -6,7 +6,12 @@
     $descriptionValue = ''; 
     $parentSelected = '';
     $action = 'action="store"';
-    
+    $pathCancel = '../';
+
+    if ($dataMenuUpdate) {
+        $pathCancel .= '../';
+    }
+
     if ($dataMenuUpdate) {
         $id = $dataMenuUpdate['id'];
         $nameValue = $dataMenuUpdate['name'];
@@ -27,13 +32,23 @@
                 <label for="parent">Menú Padre</label>
                 <select id="parent" name="parent" class="form-control" style="width: 200px;">
                     <option <?= $parentSelected ?? 'selected' ?> value="">Elige el Menú padre</option>
-                    <?php foreach ($menus as $menu):
+                    <?php 
+                        foreach ($menus as $menu):
                             $id = $menu['id'];
                             $name = $menu['name'];
                             $isSelected = $id == $parentSelected;
+                            $menuChoosen = null;
+
+                            if ($dataMenuUpdate) {
+                                $menuChoosen = $dataMenuUpdate['id'];
+                            }
+                            if ($menuChoosen != $id):
                     ?>
                         <option <?= $isSelected ? 'selected' : ''; ?> value="<?= $id ?>"><?= $name ?></option>
-                    <?php endforeach?>
+                    <?php
+                            endif;
+                        endforeach;
+                    ?>
                 </select>
             </div>
             <div class="d-flex justify-content-between mx-5">
@@ -45,7 +60,7 @@
                 <textarea id="description" name="description" class="form-control" style="width: 200px;"><?= $descriptionValue?></textarea>
             </div>
             <div class="d-flex justify-content-between my-5">
-                <a href="../../" class="btn btn-danger">Cancelar</a>
+                <a href="<?= $pathCancel ?>" class="btn btn-danger">Cancelar</a>
                 <button class="btn btn-primary">Enviar</button>
             </div>
         </form>
