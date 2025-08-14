@@ -1,7 +1,9 @@
 <?php
 namespace App\Http;
 
-class Response{
+use App\Http\Interfaces\IResponse;
+
+class Response implements IResponse{
     private $view;
     private $data;
     public function __construct($view, $data = []) {
