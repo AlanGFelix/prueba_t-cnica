@@ -14,27 +14,12 @@
             </tr>
         </thead>
         <tbody>
-            <?php 
-            $menus = $data['menus'];
-            foreach ($menus as $menu): ?>
-                <tr>
-                    <td>
-                        <?= $menu['id'] ?>
-                    </td>
-                    <td>
-                        <?= $menu['name'] ?>
-                    </td>
-                    <td>
-                        Padre
-                    </td>
-                    <td>
-                        <?= $menu['description'] ?>
-                    </td>
-                    <td>
-                        Acciones...
-                    </td>
-                </tr>
-            <?php endforeach; ?>
+            <?php
+                use App\Http\Model\Menu;
+
+                $menus = $data['menus'];
+            ?>
+            <?= Menu::printMenu($menus)?>
         </tbody>
     </table>
 </div>

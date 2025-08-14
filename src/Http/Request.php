@@ -46,12 +46,11 @@ class Request implements IRequest{
         $method = $this->getMethod();
         $databaseInstance = new Database();
         $menuInstance = new Menu($databaseInstance);
-        $request = $_POST;
 
         $response = call_user_func([
             new $controller($menuInstance),
             $method
-        ], $request);
+        ]);
         
         try {
             if ($response instanceof Response) {
@@ -60,9 +59,7 @@ class Request implements IRequest{
                 throw new Exception('Error al procesar la solicitud');
             }
         } catch(Exception $e) {
-            echo "Detalle: {$e->getMessage()}";
+            echo "Error al gestionar el controller. Detalle: {$e->getMessage()}";
         }
-
-        
     }
 }

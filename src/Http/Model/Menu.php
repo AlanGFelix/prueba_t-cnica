@@ -21,6 +21,12 @@ class Menu implements IMenu {
 
     public function getAll() {
         $menus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null");
+
+        return $menus;
+    }
+
+    public function getAllWithChildren() {
+        $menus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null");
         $menus = $this->getChilds($menus);
 
         return $menus;
@@ -63,5 +69,38 @@ class Menu implements IMenu {
         }
         
         return $menus;
+    }
+
+    public static function printMenu($menus, $parent = null){
+        $menuRows = "";
+        $parentName = $parent['name'] ?? '';
+        
+        foreach ($menus as $menu){
+            $menuRows .= 
+                "<tr>
+                    <td>
+                        {$menu['id']}
+                    </td>
+                    <td>
+                        {$menu['name']}
+                    </td>
+                    <td>
+                        $parentName
+                    </td>
+                    <td>
+                        {$menu['description']}
+                    </td>
+                    <td>
+                        Acciones...
+                    </td>
+                </tr>";
+
+            $submenus = $menu['submenus'];
+            if($submenus) {
+                $menuRows .= self::printMenu($submenus, $menu);  
+            }
+        }
+
+        return $menuRows;
     }
 }

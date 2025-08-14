@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Interfaces\IController;
 use App\Http\Interfaces\IMenu;
+use Request;
 use App\Http\Response;
 
 class MenuController implements IController{
@@ -12,26 +13,32 @@ class MenuController implements IController{
         $this->menuInstance = $menuInstance;
     }
     public function index() {
-        $menus = $this->menuInstance->getAll();
+        $menus = $this->menuInstance->getAllWithChildren();
 
         return new Response('menu', ['menus' => $menus]);
     }
 
     public function create() {
-        return new Response('create-menu');
+        $menus = $this->menuInstance->getAll();
+
+        return new Response('create-menu', ['menus' => $menus]);
     }
 
-    public function store($request) {
-        $this->validateInputs($request);
+    public function store() {
+        if($_SERVER['REQUEST_METHOD'] != 'POST'){
+            die("Método no permitio para la operación");
+        }
 
-        $name = $request['name'];
-        $description = $request['description'];
-        $parent = $request['parent'] ?? null;
+        $body = $_POST;
+        $this->validateInputs($body);
+
+        $name = trim($body['name']);
+        $description = trim($body['description']);
+        $parent = $body['parent'] == "" ? null : $body['parent'];
 
         $this->menuInstance->create($name, $description, $parent);
         
-        header("Location: ../");
-        exit(303);
+        return new Response('redirect', ['path' => '../']);
     }
 
     public function update() {
@@ -39,22 +46,18 @@ class MenuController implements IController{
     }
 
     private function validateInputs($request) {
-        $parent = $request['parent'] ?? null;
-        $name = $request['name'];
-        $description = $request['description'];
-
-       if (!$name) {
+        if (!isset($request['name'])) {
             die("El valor del nombre del menú debe ser enviado");
         }
-
-        if (!$description) {
+        
+        if (!isset($request['description'])) {
             die("El valor de la descripción debe ser enviado");
         } 
-
-        if (!is_int($parent)) {
-            die("El valor del menú padre debe ser un id de otro menú");
-        }
         
+        $parent = (int) $request['parent'];
+        $name = trim($request['name']);
+        $description = trim($request['description']);
+
         if (!is_string($name)) {
             die("El valor del nombre del menú debe ser string");
         }
@@ -63,17 +66,23 @@ class MenuController implements IController{
             die("El valor de la descripción debe ser string");
         }
 
-        if ($name = "") {
+        if ($name == "") {
             die("El valor del nombre del menú no puede estar vacío");
         }
 
-        if ($description = "") {
+        if ($description == "") {
             die("El valor de la descripción no puede estar vacío");
         }
 
-        $menu = $this->menuInstance->get($parent);
-        if (count($menu) < 1) {
-            die("Debe mandar un menú padre existente");
+        if(isset($parent) && $parent != "") {
+            if (!is_int($parent)) {
+                die("El valor del menú padre debe ser un id de otro menú");
+            }
+
+            $menu = $this->menuInstance->get($parent);
+            if (count($menu) < 1) {
+                die("Debe mandar un menú padre existente");
+            }
         }
     }
 }
