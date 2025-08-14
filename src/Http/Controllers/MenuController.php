@@ -14,7 +14,7 @@ class MenuController implements IController{
         $this->menuInstance = $menuInstance;
     }
     public function index() {
-        $menus = $this->menuInstance->getAllWithChildren();
+        $menus = $this->menuInstance->getAllWithParent();
 
         return new Response('menu', ['menus' => $menus]);
     }

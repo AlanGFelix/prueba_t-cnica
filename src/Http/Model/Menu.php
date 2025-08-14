@@ -36,6 +36,14 @@ class Menu implements IMenu {
         return $menus;
     }
 
+    public function getAllWithParent() {
+        $menusWithoutParent = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null ORDER BY id");
+        $menusWithParent = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is not null ORDER BY id");
+        $menus = $this->getParentName($menusWithParent, $menusWithoutParent);
+
+        return $menus;
+    }
+
     public function create($name, $description, $id_parent = null) {
         try {
             $this->dbInstance->execute(
@@ -82,36 +90,37 @@ class Menu implements IMenu {
         return $menus;
     }
 
-    public static function printMenu($menus, $parent = null){
-        $menuRows = "";
-        $parentName = $parent['name'] ?? '';
-        
-        foreach ($menus as $menu){
-            $menuRows .= 
-                "<tr>
-                    <td>
-                        {$menu['id']}
-                    </td>
-                    <td>
-                        {$menu['name']}
-                    </td>
-                    <td>
-                        $parentName
-                    </td>
-                    <td>
-                        {$menu['description']}
-                    </td>
-                    <td>
-                        <a href='menu/edit/{$menu['id']}' class='btn btn-info text-decoration-none'>Editar</a>
-                    </td>
-                </tr>";
+    private function getParentName($menusWithParent, $menusWithoutParent) {
+        $menusParents = $this->indexByParent($menusWithParent);
+        $menus = [];
 
-            $submenus = $menu['submenus'];
-            if($submenus) {
-                $menuRows .= self::printMenu($submenus, $menu);  
+        foreach($menusWithoutParent as $menu) {
+            array_push($menus, $menu);
+            $idParent = $menu['id'];
+            $children = $menusParents[$idParent];
+
+            foreach ($children as $menuChild) {
+                unset($menuChild['id_parent']);
+                $menuChild['parent'] = ['id' => $menu['id'], 'name' => $menu['name']];
+                array_push($menus, $menuChild);
             }
         }
 
-        return $menuRows;
+        return $menus;
+    }
+
+    private function indexByParent($menusWithParent) {
+        $arr = [];
+
+        foreach ($menusWithParent as $menu) {
+            $parent = $menu['id_parent'];
+            if (!isset($arr[$parent])) {
+                $arr[$parent] = [$menu];
+            } else {
+                array_push($arr[$parent], $menu);
+            }
+        }
+
+        return $arr;
     }
 }

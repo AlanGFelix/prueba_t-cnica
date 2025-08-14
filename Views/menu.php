@@ -15,11 +15,32 @@
         </thead>
         <tbody>
             <?php
-                use App\Http\Model\Menu;
-
                 $menus = $data['menus'];
+                print_r(count($menus));
+                foreach ($menus as $menu):
+                    $id = $menu['id'];
+                    $name = $menu['name'];
+                    $parentName = isset($menu['parent']) ? $menu['parent']['name'] : '';
+                    $description = $menu['description'];
             ?>
-            <?= Menu::printMenu($menus)?>
+                <tr>
+                    <td>
+                        <?= $id ?>
+                    </td>
+                    <td>
+                        <?= $name ?>
+                    </td>
+                    <td>
+                        <?= $parentName ?>
+                    </td>
+                    <td>
+                        <?= $description ?>
+                    </td>
+                    <td>
+                        <a href="menu/edit/<?= $menu['id'] ?>" class='btn btn-info text-decoration-none'>Editar</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
         </tbody>
     </table>
 </div>

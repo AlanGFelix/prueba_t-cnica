@@ -4,6 +4,7 @@ namespace App\lib\Database;
 
 use PDOException;
 Use App\lib\Env\Env;
+use PDO;
 
 class Database {
     private $connection = null;
@@ -22,7 +23,7 @@ class Database {
             $username = $_ENV['DB_USERNAME'];
             $password = $_ENV['DB_PASSWORD'];
 
-            $connection = new \PDO($connectionString, $username, $password);
+            $connection = new PDO($connectionString, $username, $password);
             $this->connection = $connection;
         } catch (PDOException $e) {
             die("Error conectando a la base de datos: ". $e->getMessage());
@@ -34,7 +35,7 @@ class Database {
             $connection = $this->connection;
             $statement = $connection->prepare($query);
             $statement->execute($params);
-            $result = $statement->fetchAll();
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
             return $result;
         } catch (PDOException $e) {
