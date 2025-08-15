@@ -1,1 +1,0 @@
-create table menus(id serial not null, name varchar(100) not null, description text not null, id_parent int, status int default 1);
