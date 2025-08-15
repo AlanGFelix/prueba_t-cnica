@@ -16,7 +16,7 @@ class MenuController implements IController{
     public function index() {
         $menus = $this->menuInstance->getAllWithParent();
 
-        return new Response('menu', ['menus' => $menus]);
+        return $this->response('menu', ['menus' => $menus]);
     }
 
     public function show($args) {
@@ -31,13 +31,13 @@ class MenuController implements IController{
         $menu = $this->menuInstance->get($id);
         $description = $menu['description'];
 
-        return new Response('detail', ['description' => $description]);
+        return $this->response('detail', ['description' => $description]);
     }
 
     public function create() {
         $menus = $this->menuInstance->getAll();
 
-        return new Response('create-menu', ['menus' => $menus]);
+        return $this->response('create-menu', ['menus' => $menus]);
     }
 
     public function store() {
@@ -54,7 +54,7 @@ class MenuController implements IController{
 
         $this->menuInstance->create($name, $description, $parent);
         
-        return new Response('redirect', ['path' => '../']);
+        return $this->response('redirect', ['path' => '../']);
     }
 
     public function edit($args) {
@@ -73,7 +73,7 @@ class MenuController implements IController{
             die("No existe un menú con ese id");
         }
 
-        return new Response('create-menu',  ['menus' => $menus, 'menuUpdate' => [$menuUpdate]]);
+        return $this->response('create-menu',  ['menus' => $menus, 'menuUpdate' => [$menuUpdate]]);
     }
 
     public function update($args) {
@@ -94,7 +94,7 @@ class MenuController implements IController{
 
         $this->menuInstance->update($id, $name, $description, $parent);
 
-        return new Response('redirect', ['path' => '../../']);
+        return $this->response('redirect', ['path' => '../../']);
     }
 
     public function delete($args) {
@@ -109,7 +109,14 @@ class MenuController implements IController{
 
         $this->menuInstance->delete($id);
 
-        return new Response('redirect', ['path' => '../../']);
+        return $this->response('redirect', ['path' => '../../']);
+    }
+
+    private function response($view, $data) {
+        $menus = $this->menuInstance->getAllWithChildren();
+        $data = array_merge($data, ['menusNavbar' => $menus]);
+
+        return new Response($view, $data);
     }
 
     private function validateInputs($request) {

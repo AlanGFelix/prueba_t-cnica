@@ -6,40 +6,40 @@
     <table class="table table-striped w-100">
         <thead>
             <tr>
-               <td>ID</td>
-               <td>Nombre</td>
-               <td>Menu Padre</td>
-               <td>Descripción</td>
-               <td>Acciones</td>
+                <td>ID</td>
+                <td>Nombre</td>
+                <td>Menu Padre</td>
+                <td>Descripción</td>
+                <td>Acciones</td>
             </tr>
         </thead>
         <tbody>
             <?php
-                $menus = $data['menus'];
-                foreach ($menus as $menu):
-                    $id = $menu['id'];
-                    $name = $menu['name'];
-                    $parentName = isset($menu['parent']) ? $menu['parent']['name'] : '';
-                    $description = $menu['description'];
-            ?>
-                <tr>
-                    <td>
-                        <?= $id ?>
-                    </td>
-                    <td>
-                        <?= $name ?>
-                    </td>
-                    <td>
-                        <?= $parentName ?>
-                    </td>
-                    <td>
-                        <?= $description ?>
-                    </td>
-                    <td>
-                        <a href="menu/edit/<?= $menu['id'] ?>" class='btn btn-info text-decoration-none'>Editar</a>
-                        <a href="menu/delete/<?= $menu['id'] ?>" class='btn btn-danger text-decoration-none'>Eliminar</a>
-                    </td>
-                </tr>
+            $menus = $data['menus'];
+            foreach ($menus as $menu):
+                $id = $menu['id'];
+                $name = $menu['name'];
+                $parentName = isset($menu['parent']) ? $menu['parent']['name'] : '';
+                $description = $menu['description'];
+        ?>
+            <tr>
+                <td>
+                    <?= $id ?>
+                </td>
+                <td>
+                    <?= $name ?>
+                </td>
+                <td>
+                    <?= $parentName ?>
+                </td>
+                <td>
+                    <?= $description ?>
+                </td>
+                <td>
+                    <a href="menu/edit/<?= $menu['id'] ?>" class='btn btn-info text-decoration-none'>Editar</a>
+                    <a href="menu/delete/<?= $menu['id'] ?>" class='btn btn-danger text-decoration-none'>Eliminar</a>
+                </td>
+            </tr>
             <?php endforeach; ?>
         </tbody>
     </table>

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,29 +9,15 @@
     <link rel="stylesheet" href="../views/assets/layout/css/index.css">
     <script src="../views/assets/layout/js/index.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 py-0">
-            <div class="container-fluid justify-content-start h-100">
-                <span class="navbar-brand">Evaluación</span>
-                <div class="dropdown  h-100">
+    <?php
+        if (strpos($view, 'menu.php') !== false) {
+            require_once 'header.php';
+        }
+    ?>
 
-                    <div class="d-flex align-items-center btn dropdown-toggle h-100 rounded-0 dropdown-button">
-                        <span>
-                            Dropdown link
-                        </span>
-                    </div>
-
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
     <main class="d-flex justify-content-center">
         <?php require_once $view?>
     </main>
