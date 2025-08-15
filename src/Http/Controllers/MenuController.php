@@ -19,6 +19,21 @@ class MenuController implements IController{
         return new Response('menu', ['menus' => $menus]);
     }
 
+    public function show($args) {
+        $input = $args[0];
+
+        try {
+            $id = $this->validateInt($input);
+        } catch (Exception $e) {
+            die("Error con el Menú solicitado. Detalle: {$e->getMessage()}");
+        }
+
+        $menu = $this->menuInstance->get($id);
+        $description = $menu['description'];
+
+        return new Response('detail', ['description' => $description]);
+    }
+
     public function create() {
         $menus = $this->menuInstance->getAll();
 
