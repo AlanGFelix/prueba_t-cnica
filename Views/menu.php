@@ -20,7 +20,6 @@
                     $id = $menu['id'];
                     $name = $menu['name'];
                     $parentName = isset($menu['parent']) ? $menu['parent']['name'] : '';
-                    print_r($menu);
                     $description = $menu['description'];
             ?>
                 <tr>
@@ -38,7 +37,7 @@
                     </td>
                     <td>
                         <a href="menu/edit/<?= $menu['id'] ?>" class='btn btn-info text-decoration-none'>Editar</a>
-                        <a href="menu/delete" class='btn btn-danger text-decoration-none'>Eliminar</a>
+                        <a href="menu/delete/<?= $menu['id'] ?>" class='btn btn-danger text-decoration-none'>Eliminar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

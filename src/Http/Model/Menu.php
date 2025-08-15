@@ -14,7 +14,7 @@ class Menu implements IMenu {
     }
 
     public function get($id) {
-        $menu = $this->dbInstance->execute("select * from menus WHERE id = ?", [$id]);
+        $menu = $this->dbInstance->execute("select * from menus WHERE id = ? AND status = 1", [$id]);
 
         if($menu) {
             $menu = $menu[0];
@@ -24,20 +24,20 @@ class Menu implements IMenu {
     }
 
     public function getAll() {
-        $menus = $this->dbInstance->execute("SELECT * FROM menus ORDER BY id");
+        $menus = $this->dbInstance->execute("SELECT * FROM menus WHERE status = 1 ORDER BY id");
 
         return $menus;
     }
 
     public function getAllWithChildren() {
-        $menus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null");
+        $menus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent is null AND status = 1 ORDER BY id");
         $menus = $this->getChilds($menus);
 
         return $menus;
     }
 
     public function getAllWithParent() {
-        $allMenus = $this->dbInstance->execute("SELECT * FROM menus ORDER BY id");
+        $allMenus = $this->dbInstance->execute("SELECT * FROM menus WHERE status = 1 AND id_parent is null  ORDER BY id");
         $menus = $this->getChilds($allMenus);
         $menus = $this->orderMenus($menus);
 
@@ -67,7 +67,14 @@ class Menu implements IMenu {
     }
 
     public function delete($id) {
-
+        try {
+            $this->dbInstance->execute(
+                "UPDATE menus SET status = 2 WHERE id = :id OR id_parent = :id",
+                ['id' => $id]
+            );
+        } catch (PDOException $e) {
+            die("Error al eliminar el menú. Detalle: " . $e->getMessage());
+        }
     }
 
     private function getChilds($menus) {
@@ -76,7 +83,7 @@ class Menu implements IMenu {
             $idMenu = $menu['id'];
             
             try {
-                $submenus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent = ?", [$idMenu]);
+                $submenus = $this->dbInstance->execute("SELECT * FROM menus WHERE id_parent = ? AND status = 1", [$idMenu]);
             } catch (PDOException $e) {
                 die("Error al buscar los submenús. Detalle: " . $e->getMessage());
             }
@@ -92,6 +99,7 @@ class Menu implements IMenu {
 
     private function orderMenus($menus, $parent = null) {
         $menusOrdered = [];
+
         foreach ($menus as &$menu) {
             $submenus = isset($menu['submenus']) ? $menu['submenus'] : null;
 
@@ -101,14 +109,15 @@ class Menu implements IMenu {
 
             unset($menu['submenus']);
             unset($menu['id_parent']);
+
             array_push($menusOrdered, $menu);
+           
             if ($submenus) {
                 $menuParent = ['id' => $menu['id'], 'name' => $menu['name']];
-                $newMenus = $this->orderMenus($submenus, $menuParent);
-                
-                array_merge([$menusOrdered], $newMenus);
-            }
+                $submenus = $this->orderMenus($submenus, $menuParent);
 
+                $menusOrdered = array_merge($menusOrdered, $submenus);
+            }
         }
 
         return $menusOrdered;
